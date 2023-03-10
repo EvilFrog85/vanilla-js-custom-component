@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom component user</title>
+</head>
+<body>
+    <button id="addUserBtn">Add user</button>
+
+    <my-user-table data-header="Temporary header value"></my-user-table>
+    
+    <script type="text/javascript">
+        // Let's add a mocked delay of data, 500ms
+        setTimeout(() => {            
+            const userTableEl = document.getElementsByTagName('my-user-table')[0];
+    
+            // Overwrite default "data-header" attribute.
+            userTableEl.setAttribute('data-header', 'My custom user table');
+    
+            const usersDataObject = [
+                {
+                    id: 1,
+                    firstName: "Marika",
+                    lastName: "Markusson"
+                },
+                {
+                    id: 2,
+                    firstName: "Kalle",
+                    lastName: "Karlsson"
+                }
+            ];
+    
+            // Set element on custom property. Complex data needs to passed on properties.
+            userTableEl.userData = usersDataObject;
+            userTableEl.setAttribute('data-users-updated', 'true');
+        }, 500);
+    </script>
+    
+    <script type="module" src="myUserTable.js"></script>
+    
+    <script type="text/javascript">
+        document.addEventListener('my-user-table-loaded', (event) => {
+            console.log( event.detail );
+        });
+
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            // Demo to show that disconnectedCallback() is run
+            //document.getElementsByTagName('my-user-table')[0].remove();
+
+            const userTableEl = document.getElementsByTagName('my-user-table')[0];
+            // slice() as a hack to copy object instead of referencing it
+            const userDataObject = userTableEl.userData.slice();
+
+            const userCount = userDataObject.length;
+
+            userDataObject.push(
+                {
+                    id: userCount + 1,
+                    firstName: "Anew",
+                    lastName: "User"
+                }
+            );
+
+            /*
+            // No change detection for properties. Remove and add it once again to trigger rerender.
+            userTableEl.remove();
+            userTableEl.userData = userDataObject;
+            document.body.append( userTableEl );
+            */
+
+            // Use an observed attribute to trigger rerender.
+            userTableEl.userData = userDataObject;
+            userTableEl.setAttribute('data-users-updated', 'true');
+        });
+    </script>
+    <style type="text/css">
+        /* Set border-color of custom component in the parent using a CSS-variable */
+        my-user-table {
+            --border-color: #F00;
+        } 
+    </style>
+</body>
+</html>

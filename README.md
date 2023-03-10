@@ -5,7 +5,7 @@ This is a demo project of a custom component defined using vanilla JavaScript
 1. Run `npm install`
 2. Run `npm run start`
 
-## Was happening here?
+## What is happening here?
 The custom component recieves data from the host (JS in the index.html) in two ways:
 1. attributes for simple data
 2. custom properties for complex data 
